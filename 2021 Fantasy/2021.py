@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib import style
 import pickle
 import csv
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 
 
 train_data = pd.read_csv("train.csv", sep=",")
@@ -27,9 +29,15 @@ linear = linear_model.LassoCV()
 xdel = np.delete(X,0,1)
 xdel2 = np.delete(x_test,0,1)
 
-linear.fit(xdel,y)
+# Apply min max scaler to the datasets
+sc = MinMaxScaler()                    
+sc.fit(X)                          
+X_train_std = sc.transform(xdel)      
+X_test_std = sc.transform(xdel2)
 
-predictions = linear.predict(xdel2)  # Gets a list of all predictions
+linear.fit(X_train_std,y)
+
+predictions = linear.predict(X_test_std)  # Gets a list of all predictions
 
 with open('flex.csv', mode='w') as flex:
     writer = csv.writer(flex, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL,lineterminator = '\n')
